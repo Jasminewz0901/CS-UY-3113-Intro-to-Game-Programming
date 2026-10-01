@@ -11,15 +11,15 @@
 * Academic Misconduct
 **/
 
-constexpr int   SCREEN_WIDTH  = 1600 / 2,
-                SCREEN_HEIGHT = 900 / 2,
-                FPS           = 60;
+constexpr int SCREEN_WIDTH  = 1600 / 2,
+              SCREEN_HEIGHT = 900 / 2,
+              FPS           = 60;
 
-constexpr char    DAWN_COLOR[] = "#ffb38aff";
-constexpr char    MORNING_COLOR[] = "#1eddfffe";
-constexpr char    EVENING_COLOR[] = "#ffcc00ff";
+constexpr char DAWN_COLOR[] = "#ffb38aff";
+constexpr char MORNING_COLOR[] = "#1eddfffe";
+constexpr char EVENING_COLOR[] = "#ffcc00ff";
 
-constexpr Vector2 ORIGIN      = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
+constexpr Vector2 ORIGIN = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
 
 constexpr char LUFFY_FP[] = "assets/luffy3.png"; 
 constexpr char BALL_FP[] = "assets/ball.png"; 
@@ -27,12 +27,14 @@ constexpr char SUN_FP[] = "assets/sun.png";
 constexpr char GRASS_FP[] = "assets/grass.png"; 
 constexpr char STAR_FP[] = "assets/stars.png";
 
-AppStatus gAppStatus     = RUNNING;
-float     gLuffyTime     = 0.0f,
-          gPreviousTicks = 0.0f,
-          gSunOrbit      = 0.0f,
-          gBallTime      = 0.0f,
-          gLuffyRotation = 0.0f;
+AppStatus gAppStatus = RUNNING;
+
+float gLuffyTime     = 0.0f,
+      gPreviousTicks = 0.0f,
+      gSunOrbit      = 0.0f,
+      gBallTime      = 0.0f,
+      gLuffyRotation = 0.0f;
+
 Color gBackgroundColor = ColorFromHex(DAWN_COLOR);
 
 Vector2 gLuffyPosition = { 200.0f, 280.0f };
@@ -127,7 +129,6 @@ void render()
             static_cast<float>(gStarTexture.height)
         };
         
-
         Rectangle starDestinationArea = {
             0.0f,
             0.0f,
@@ -282,6 +283,5 @@ int main(void)
     }
 
     shutdown();
-
     return 0;
 }

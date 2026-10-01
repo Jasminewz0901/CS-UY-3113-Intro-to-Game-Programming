@@ -11,7 +11,6 @@
 * Academic Misconduct
 **/
 
-// Global Constants
 constexpr int   SCREEN_WIDTH  = 1600 / 2,
                 SCREEN_HEIGHT = 900 / 2,
                 FPS           = 60;
@@ -28,7 +27,6 @@ constexpr char SUN_FP[] = "assets/sun.png";
 constexpr char GRASS_FP[] = "assets/grass.png"; 
 constexpr char STAR_FP[] = "assets/stars.png";
 
-// Global Variables
 AppStatus gAppStatus     = RUNNING;
 float     gLuffyTime     = 0.0f,
           gPreviousTicks = 0.0f,
@@ -37,31 +35,26 @@ float     gLuffyTime     = 0.0f,
           gLuffyRotation = 0.0f;
 Color gBackgroundColor = ColorFromHex(DAWN_COLOR);
 
-// Object position (x, y)
 Vector2 gLuffyPosition = { 200.0f, 280.0f };
 Vector2 gBallPosition = { 350.0f, 280.0f };
 Vector2 gSunPosition = { 100.0f, 100.0f };
 
-// Object size (width, height)
 Vector2 gLuffyScale = { 150.0f, 150.0f };
 Vector2 gBallScale = { 50.0f, 50.0f };
 Vector2 gSunScale = { 100.0f, 100.0f };
 
-// Picture
 Texture2D gLuffyTexture;
 Texture2D gBallTexture;
 Texture2D gSunTexture;
 Texture2D gGrassTexture;
 Texture2D gStarTexture;
 
-// Function Declarations
 void initialise();
 void processInput();
 void update();
 void render();
 void shutdown();
 
-// Function Definitions
 void initialise()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Project 1: Simple 2D Scene");
@@ -86,12 +79,10 @@ void update()
     float deltaTime = ticks - gPreviousTicks;
     gPreviousTicks = ticks;
 
-    // Sun
     gSunOrbit += 0.5f * deltaTime;
     gSunPosition.x = ORIGIN.x + 300.0f * cosf(gSunOrbit);
     gSunPosition.y = ORIGIN.y + 175.0f * sinf(gSunOrbit);
 
-    // Ball
     gBallTime += 1.0f * deltaTime;
     gBallPosition.x += 100.0f * deltaTime;
     gBallPosition.y = 250.0f + 30.0f * sinf(gBallTime * 4.0f);
@@ -103,7 +94,6 @@ void update()
         gBallPosition.x = 0.0f;
     }
 
-    // Luffy
     if (gLuffyPosition.x < gBallPosition.x) {
         gLuffyPosition.x += 80.0f * deltaTime;
     } else if (gLuffyPosition.x > gBallPosition.x) {
@@ -114,7 +104,6 @@ void update()
     gLuffyPosition.y = 280.0f + 10.0f * sinf(gLuffyTime * 6.0f);
     gLuffyRotation = 10.0f * sinf(gLuffyTime * 4.0f);
 
-    // Background 
     if (gSunPosition.x < 200.0f) {
         gBackgroundColor = ColorFromHex(DAWN_COLOR);
     } else if (gSunPosition.x < 550.0f) {
@@ -130,7 +119,6 @@ void render()
 
     ClearBackground(gBackgroundColor);
 
-    // Stars
     if (gSunPosition.y >= 340.0f) {
         Rectangle starTextureArea = {
             0.0f,
@@ -162,7 +150,6 @@ void render()
         );
     }
 
-    // Sun
     Rectangle sunTextureArea = {
         0.0f,
         0.0f,
@@ -191,7 +178,6 @@ void render()
         WHITE
     );
 
-    // Grass
     Rectangle grassTextureArea = {
         0.0f,
         0.0f,
@@ -220,7 +206,6 @@ void render()
         WHITE
     );
 
-    // Ball
     Rectangle ballTextureArea = {
         0.0f,
         0.0f,
@@ -249,8 +234,6 @@ void render()
         WHITE
     );
 
-    // Luffy
-    // What part of the Luffy picture do I want to use
     Rectangle luffyTextureArea = {
         0.0f,
         0.0f,
@@ -258,7 +241,6 @@ void render()
         static_cast<float>(gLuffyTexture.height)
     };
 
-    // Where Luffy is at and how big he is
     Rectangle luffyDestinationArea = {
         gLuffyPosition.x,
         gLuffyPosition.y,
@@ -266,7 +248,6 @@ void render()
         gLuffyScale.y
     };
 
-    // Center of Luffy
     Vector2 luffyOrigin = {
         gLuffyScale.x / 2.0f,
         gLuffyScale.y / 2.0f

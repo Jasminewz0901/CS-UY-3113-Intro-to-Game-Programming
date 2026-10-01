@@ -57,8 +57,7 @@ void update();
 void render();
 void shutdown();
 
-void initialise()
-{
+void initialise() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Project 1: Simple 2D Scene");
 
     gLuffyTexture = LoadTexture(LUFFY_FP);
@@ -70,13 +69,11 @@ void initialise()
     SetTargetFPS(FPS);
 }
 
-void processInput()
-{
+void processInput() {
     if (WindowShouldClose()) gAppStatus = TERMINATED;
 }
 
-void update()
-{
+void update() {
     float ticks = static_cast<float>(GetTime());
     float deltaTime = ticks - gPreviousTicks;
     gPreviousTicks = ticks;
@@ -115,8 +112,7 @@ void update()
     }
 }
 
-void render()
-{
+void render() {
     BeginDrawing();
 
     ClearBackground(gBackgroundColor);
@@ -126,20 +122,20 @@ void render()
             0.0f,
             0.0f,
             static_cast<float>(gStarTexture.width),
-            static_cast<float>(gStarTexture.height)
-        };
+            static_cast<float>(gStarTexture.height);
+        }
         
         Rectangle starDestinationArea = {
             0.0f,
             0.0f,
             static_cast<float>(SCREEN_WIDTH),
-            static_cast<float>(SCREEN_HEIGHT)
-        };
+            static_cast<float>(SCREEN_HEIGHT);
+        }
 
         Vector2 starOrigin = {
             0.0f,
-            0.0f
-        };
+            0.0f;
+        }
 
         DrawTexturePro(
             gStarTexture,
@@ -147,28 +143,28 @@ void render()
             starDestinationArea,
             starOrigin,
             0.0f,
-            WHITE
-        );
+            WHITE;
+        )
     }
 
     Rectangle sunTextureArea = {
         0.0f,
         0.0f,
         static_cast<float>(gSunTexture.width),
-        static_cast<float>(gSunTexture.height)
-    };
+        static_cast<float>(gSunTexture.height);
+    }
 
     Rectangle sunDestinationArea = {
         gSunPosition.x,
         gSunPosition.y,
         gSunScale.x,
-        gSunScale.y
-    };
+        gSunScale.y;
+    }
 
     Vector2 sunOrigin = {
         gSunScale.x / 2.0f,
-        gSunScale.y / 2.0f
-    };
+        gSunScale.y / 2.0f;
+    }
 
     DrawTexturePro(
         gSunTexture,
@@ -176,27 +172,27 @@ void render()
         sunDestinationArea,
         sunOrigin,
         0.0f,
-        WHITE
-    );
+        WHITE;
+    )
 
     Rectangle grassTextureArea = {
         0.0f,
         0.0f,
         static_cast<float>(gGrassTexture.width),
-        static_cast<float>(gGrassTexture.height)
-    };
+        static_cast<float>(gGrassTexture.height);
+    }
 
     Rectangle grassDestinationArea = {
         0.0f,
         300.0f,
         static_cast<float>(SCREEN_WIDTH),
-        150.0f
-    };
+        150.0f;
+    }
 
     Vector2 grassOrigin = {
         0.0f,
-        0.0f
-    };
+        0.0f;
+    }
 
     DrawTexturePro(
         gGrassTexture,
@@ -204,27 +200,27 @@ void render()
         grassDestinationArea,
         grassOrigin,
         0.0f,
-        WHITE
-    );
+        WHITE;
+    )
 
     Rectangle ballTextureArea = {
         0.0f,
         0.0f,
         static_cast<float>(gBallTexture.width),
-        static_cast<float>(gBallTexture.height)
-    };
+        static_cast<float>(gBallTexture.height);
+    }
 
     Rectangle ballDestinationArea = {
         gBallPosition.x,
         gBallPosition.y,
         gBallScale.x,
-        gBallScale.y
-    };
+        gBallScale.y;
+    }
 
     Vector2 ballOrigin = {
         gBallScale.x / 2.0f,
-        gBallScale.y / 2.0f
-    };
+        gBallScale.y / 2.0f;
+    }
 
     DrawTexturePro(
         gBallTexture,
@@ -232,27 +228,27 @@ void render()
         ballDestinationArea,
         ballOrigin,
         0.0f,
-        WHITE
-    );
+        WHITE;
+    )
 
     Rectangle luffyTextureArea = {
         0.0f,
         0.0f,
         static_cast<float>(gLuffyTexture.width),
-        static_cast<float>(gLuffyTexture.height)
-    };
+        static_cast<float>(gLuffyTexture.height);
+    }
 
     Rectangle luffyDestinationArea = {
         gLuffyPosition.x,
         gLuffyPosition.y,
         gLuffyScale.x,
-        gLuffyScale.y
-    };
+        gLuffyScale.y;
+    }
 
     Vector2 luffyOrigin = {
         gLuffyScale.x / 2.0f,
-        gLuffyScale.y / 2.0f
-    };
+        gLuffyScale.y / 2.0f;
+    }
 
     DrawTexturePro(
         gLuffyTexture,
@@ -260,23 +256,20 @@ void render()
         luffyDestinationArea,
         luffyOrigin,
         gLuffyRotation,
-        WHITE
-    );
+        WHITE;
+    )
 
     EndDrawing();
 }
 
-void shutdown()
-{
+void shutdown() {
     CloseWindow();
 }
 
-int main(void)
-{
+int main(void) {
     initialise();
 
-    while (gAppStatus == RUNNING)
-    {
+    while (gAppStatus == RUNNING) {
         processInput();
         update();
         render();

@@ -84,7 +84,7 @@ void update() {
 
     gBallTime += 1.0f * deltaTime;
     gBallPosition.x += 100.0f * deltaTime;
-    gBallPosition.y = 250.0f + 30.0f * sinf(gBallTime * 4.0f);
+    gBallPosition.y = 320.0f + 30.0f * sinf(gBallTime * 4.0f);
 
     gBallScale.x = 50.0f + 10.0f * sinf(gBallTime * 4.0f);
     gBallScale.y = 50.0f + 10.0f * sinf(gBallTime * 4.0f);
@@ -203,34 +203,6 @@ void render() {
         WHITE
     );
 
-    Rectangle ballTextureArea = {
-        0.0f,
-        0.0f,
-        static_cast<float>(gBallTexture.width),
-        static_cast<float>(gBallTexture.height)
-    };
-
-    Rectangle ballDestinationArea = {
-        gBallPosition.x,
-        gBallPosition.y,
-        gBallScale.x,
-        gBallScale.y
-    };
-
-    Vector2 ballOrigin = {
-        gBallScale.x / 2.0f,
-        gBallScale.y / 2.0f
-    };
-
-    DrawTexturePro(
-        gBallTexture,
-        ballTextureArea,
-        ballDestinationArea,
-        ballOrigin,
-        0.0f,
-        WHITE
-    );
-
     Rectangle luffyTextureArea = {
         0.0f,
         0.0f,
@@ -256,6 +228,34 @@ void render() {
         luffyDestinationArea,
         luffyOrigin,
         gLuffyRotation,
+        WHITE
+    );
+
+      Rectangle ballTextureArea = {
+        0.0f,
+        0.0f,
+        static_cast<float>(gBallTexture.width),
+        static_cast<float>(gBallTexture.height)
+    };
+
+    Rectangle ballDestinationArea = {
+        gBallPosition.x,
+        gBallPosition.y,
+        gBallScale.x,
+        gBallScale.y
+    };
+
+    Vector2 ballOrigin = {
+        gBallScale.x / 2.0f,
+        gBallScale.y / 2.0f
+    };
+
+    DrawTexturePro(
+        gBallTexture,
+        ballTextureArea,
+        ballDestinationArea,
+        ballOrigin,
+        0.0f,
         WHITE
     );
 

@@ -157,11 +157,46 @@ void render() {
         static_cast<float>(gCloudTexture.height)
     };
 
-    Rectangle cloudDestinationArea = {
-        100.0f, 
+    Rectangle cloudDestinationArea1 = {
+        50.0f, 
         50.0f, 
         200.0f, 
         100.0f
+    };
+
+    Rectangle cloudDestinationArea2 = {
+        90.0f, 
+        90.0f, 
+        300.0f, 
+        100.0f 
+    };
+
+    Rectangle cloudDestinationArea3 = {
+        170.0f, 
+        40.0f, 
+        150.0f, 
+        150.0f 
+    };
+
+    Rectangle cloudDestinationArea4 = {
+        300.0f, 
+        30.0f, 
+        230.0f, 
+        80.0f 
+    };
+
+    Rectangle cloudDestinationArea5 = {
+        350.0f, 
+        10.0f, 
+        250.0f, 
+        200.0f 
+    };
+
+    Rectangle cloudDestinationArea6 = {
+        450.0f, 
+        70.0f, 
+        300.0f, 
+        90.0f 
     };
 
     Vector2 cloudOrigin = {
@@ -172,7 +207,52 @@ void render() {
     DrawTexturePro(
         gCloudTexture,
         cloudTextureArea,
-        cloudDestinationArea,
+        cloudDestinationArea1,
+        cloudOrigin,
+        0.0f,
+        WHITE
+    );
+
+      DrawTexturePro(
+        gCloudTexture,
+        cloudTextureArea,
+        cloudDestinationArea2,
+        cloudOrigin,
+        0.0f,
+        WHITE
+    );
+
+      DrawTexturePro(
+        gCloudTexture,
+        cloudTextureArea,
+        cloudDestinationArea3,
+        cloudOrigin,
+        0.0f,
+        WHITE
+    );
+
+      DrawTexturePro(
+        gCloudTexture,
+        cloudTextureArea,
+        cloudDestinationArea4,
+        cloudOrigin,
+        0.0f,
+        WHITE
+    );
+
+      DrawTexturePro(
+        gCloudTexture,
+        cloudTextureArea,
+        cloudDestinationArea5,
+        cloudOrigin,
+        0.0f,
+        WHITE
+    );
+
+      DrawTexturePro(
+        gCloudTexture,
+        cloudTextureArea,
+        cloudDestinationArea6,
         cloudOrigin,
         0.0f,
         WHITE

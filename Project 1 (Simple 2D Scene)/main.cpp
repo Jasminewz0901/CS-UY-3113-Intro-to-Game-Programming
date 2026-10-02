@@ -8,7 +8,7 @@
 * I pledge that I have completed this assignment without
 * collaborating with anyone else, in conformance with the
 * NYU School of Engineering Policies and Procedures on 
-* Academic Misconduct
+* Academic Misconduct.
 **/
 
 constexpr int SCREEN_WIDTH  = 1600 / 2,

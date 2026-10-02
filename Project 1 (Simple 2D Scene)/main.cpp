@@ -26,6 +26,7 @@ constexpr char BALL_FP[] = "assets/ball.png";
 constexpr char SUN_FP[] = "assets/sun.png"; 
 constexpr char GRASS_FP[] = "assets/grass.png"; 
 constexpr char STAR_FP[] = "assets/stars.png";
+constexpr char CLOUD_FP[] = "assets/cloud.png";
 
 AppStatus gAppStatus = RUNNING;
 
@@ -50,6 +51,7 @@ Texture2D gBallTexture;
 Texture2D gSunTexture;
 Texture2D gGrassTexture;
 Texture2D gStarTexture;
+Texture2D gCloudTexture;
 
 void initialise();
 void processInput();
@@ -65,6 +67,7 @@ void initialise() {
     gSunTexture = LoadTexture(SUN_FP);
     gGrassTexture = LoadTexture(GRASS_FP);
     gStarTexture = LoadTexture(STAR_FP);
+    gLoadTexture = LoadTexture(CLOUD_FP);
 
     SetTargetFPS(FPS);
 }
@@ -146,6 +149,34 @@ void render() {
             WHITE
         );
     }
+
+    Rectangle cloudTextureArea = {
+        0.0f,
+        0.0f,
+        static_cast<float>(gCloudTexture.width),
+        static_cast<float>(gCloudTexture.height)
+    };
+
+    Rectangle cloudDestinationArea = {
+        100.0f, 
+        50.0f, 
+        200.0f, 
+        100.0f
+    };
+
+    Vector2 cloudOrigin = {
+        0.0f,
+        0.0f
+    };
+
+    DrawTexturePro(
+        gCloudTexture,
+        cloudTextureArea,
+        cloudDestinationArea,
+        cloudOrigin,
+        0.0f,
+        WHITE
+    );
 
     Rectangle sunTextureArea = {
         0.0f,

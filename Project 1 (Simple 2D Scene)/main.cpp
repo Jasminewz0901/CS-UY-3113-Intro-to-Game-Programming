@@ -67,7 +67,7 @@ void initialise() {
     gSunTexture = LoadTexture(SUN_FP);
     gGrassTexture = LoadTexture(GRASS_FP);
     gStarTexture = LoadTexture(STAR_FP);
-    gLoadTexture = LoadTexture(CLOUD_FP);
+    gCloudTexture = LoadTexture(CLOUD_FP);
 
     SetTargetFPS(FPS);
 }

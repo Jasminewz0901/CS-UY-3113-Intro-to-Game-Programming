@@ -62,10 +62,8 @@ bool gGameStarted = false;
 float gBallRotations[MAX_BALLS] = {};
 float gBallRotationDirections[MAX_BALLS] = {};
 
-// Global Variables
 AppStatus gAppStatus = RUNNING;
 
-// Object position (x, y)
 Vector2 gLeftGoaliePosition = { 40.0f, 225.0f };
 Vector2 gRightGoaliePosition = { 760.0f, 225.0f };
 Vector2 gBallPositions[MAX_BALLS];
@@ -77,7 +75,6 @@ Vector2 gLeftGoalieScale = { 71.0f, 140.0f };
 Vector2 gRightGoalieScale = { 71.0f, 140.0f };
 Vector2 gBallScale = { 25.0f, 25.0f };
 
-// Picture
 Texture2D gLeftGoalieTexture;
 Texture2D gRightGoalieTexture;
 Texture2D gBallTexture; 
@@ -91,7 +88,6 @@ Music gBGM;
 Sound gCheer;
 Sound gGoal;
 
-// Function Declarations
 void initialise();
 void processInput();
 void update();
@@ -99,7 +95,6 @@ void render();
 void shutdown();
 void resetGame();
 
-// Function Definitions
 void initialise() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Project 2: Pong Variations");
 
@@ -181,7 +176,6 @@ void resetGame() {
         gBallRotationDirections[i] = 1.0f;
     }
 }
-
 
 void processInput() {
     gLeftGoalieMovement = { 0.0f, 0.0f };
@@ -436,7 +430,6 @@ void render() {
         return;
     }
 
-    // Field
     Rectangle fieldTextureArea = {
         0.0f,
         0.0f,
@@ -579,7 +572,6 @@ void render() {
         );
     }
 
-    // Ball
     Rectangle ballTextureArea = {
         0.0f,
         0.0f,
@@ -610,7 +602,6 @@ void render() {
     );
     }
 
-    // Left Goalie
     Rectangle leftGoalieTextureArea = {
         0.0f,
         0.0f,
@@ -639,7 +630,6 @@ void render() {
         WHITE
     );
 
-    // Right Goalie
     Rectangle rightGoalieTextureArea = {
         0.0f,
         0.0f,

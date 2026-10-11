@@ -29,7 +29,7 @@ Licensed under Creative Commons: By Attribution 4.0 License
 http://creativecommons.org/licenses/by/4.0/
 */
 constexpr char CHEER_FP[] = "assets/Cheering.mp3";
-constexpr char GOAL_FP[] = "assets/Goal.mp3";
+constexpr char GOAL_FP[] = "assets/Goal2.mp3";
 constexpr char ZERO_FP[] = "assets/numbers/zero.png";
 constexpr char ONE_FP[] = "assets/numbers/one.png";
 constexpr char TWO_FP[] = "assets/numbers/two.png";

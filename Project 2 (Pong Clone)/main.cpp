@@ -181,6 +181,11 @@ void processInput() {
     gLeftGoalieMovement = { 0.0f, 0.0f };
     gRightGoalieMovement = { 0.0f, 0.0f };
 
+    if (IsKeyPressed(KEY_Q) || WindowShouldClose()) {
+        gAppStatus = TERMINATED;
+        return;
+    }
+
     if (!gGameStarted) {
         if (IsKeyPressed(KEY_B)) {
             gGameStarted = true;
@@ -255,8 +260,6 @@ void processInput() {
     if (IsKeyPressed(KEY_H)) {
         gGameStarted = false;
     }
-
-    if (IsKeyPressed(KEY_Q) || WindowShouldClose()) gAppStatus = TERMINATED;
 }
 
 void update() {

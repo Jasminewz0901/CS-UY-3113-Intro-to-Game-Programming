@@ -252,6 +252,10 @@ void processInput() {
         resetGame();
     }
 
+    if (IsKeyPressed(KEY_H)) {
+        gGameStarted = false;
+    }
+
     if (IsKeyPressed(KEY_Q) || WindowShouldClose()) gAppStatus = TERMINATED;
 }
 

@@ -4,7 +4,7 @@
 /** 
 * Author: Jasmine Zhang
 * Assignment: Pong Clone
-* Date Due: 10/14/2026
+* Date Due: 10/16/2026
 * I pledge that I have completed this assignment without
 * collaborating with anyone else, in conformance with the
 * NYU School of Engineering Policies and Procedures on 

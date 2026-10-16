@@ -50,7 +50,7 @@ constexpr char START_FP[] = "assets/starterscreen.png";
 constexpr int GOALIE_SPEED = 200;
 constexpr float BALL_SPEED = 200.0f;
 constexpr int WINNING_SCORE = 11;
-constexpr int MAX_BALLS = 20;
+constexpr int MAX_BALLS = 9;
 
 float gPreviousTicks = 0.0f;
 int gLeftScore = 0;
@@ -61,6 +61,7 @@ float gAIDirection = 1.0f;
 bool gGameStarted = false;
 float gBallRotations[MAX_BALLS] = {};
 float gBallRotationDirections[MAX_BALLS] = {};
+float gResultAnimationTime = 0.0f;
 
 AppStatus gAppStatus = RUNNING;
 
@@ -155,6 +156,8 @@ void resetGame() {
     gLeftScore = 0;
     gRightScore = 0;
     gActiveBalls = 1;
+    gAIDirection = 1.0f;
+    gResultAnimationTime = 0.0f;
 
     gLeftGoaliePosition = { 40.0f, 225.0f };
     gRightGoaliePosition = { 760.0f, 225.0f };
@@ -267,18 +270,19 @@ void update() {
     float deltaTime = ticks - gPreviousTicks;
     gPreviousTicks = ticks;
 
-    for (int i = 0; i < gActiveBalls; i++) {
-        gBallRotations[i] += 90.0f * gBallRotationDirections[i] * deltaTime;
-    }
-
     if (!gGameStarted) {
         UpdateMusicStream(gBGM);
         return;
     }
 
     if (gLeftScore >= WINNING_SCORE || gRightScore >= WINNING_SCORE) {
+        gResultAnimationTime += deltaTime;
         UpdateMusicStream(gBGM);
         return;
+    }
+
+    for (int i = 0; i < gActiveBalls; i++) {
+        gBallRotations[i] += 90.0f * gBallRotationDirections[i] * deltaTime;
     }
     
     gLeftGoaliePosition.y += GOALIE_SPEED * gLeftGoalieMovement.y * deltaTime;
@@ -674,7 +678,7 @@ void render() {
             Fade(BLACK, 0.6f)
         );
 
-        int pictureIndex = static_cast<int>(GetTime() / 1.0) % 3;
+        int pictureIndex = static_cast<int>(gResultAnimationTime / 1.0f) % 3;
 
         Texture2D leftResultTexture;
         Texture2D rightResultTexture;

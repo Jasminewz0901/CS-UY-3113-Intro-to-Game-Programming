@@ -474,50 +474,51 @@ void update() {
                 gWitch->setDirection(RIGHT);
             }
         }
-
-        if (gPumpkin->getPosition().x + gPumpkin->getColliderDimensions().x / 2.0f >
-            gWitch->getPosition().x - gWitch->getColliderDimensions().x / 2.0f &&
+        if (gGameState == PLAYING) {
+            if (gPumpkin->getPosition().x + gPumpkin->getColliderDimensions().x / 2.0f >
+                gWitch->getPosition().x - gWitch->getColliderDimensions().x / 2.0f &&
+                
+                gPumpkin->getPosition().x - gPumpkin->getColliderDimensions().x / 2.0f <
+                gWitch->getPosition().x + gWitch->getColliderDimensions().x / 2.0f &&
             
-            gPumpkin->getPosition().x - gPumpkin->getColliderDimensions().x / 2.0f <
-            gWitch->getPosition().x + gWitch->getColliderDimensions().x / 2.0f &&
-        
-            gPumpkin->getPosition().y + gPumpkin->getColliderDimensions().y / 2.0f >
-            gWitch->getPosition().y - gWitch->getColliderDimensions().y / 2.0f &&
-        
-            gPumpkin->getPosition().y - gPumpkin->getColliderDimensions().y / 2.0f <
-            gWitch->getPosition().y + gWitch->getColliderDimensions().y / 2.0f ) {
+                gPumpkin->getPosition().y + gPumpkin->getColliderDimensions().y / 2.0f >
+                gWitch->getPosition().y - gWitch->getColliderDimensions().y / 2.0f &&
             
-            gGameState = LOST;
-            gWitchDisappearing = true;
+                gPumpkin->getPosition().y - gPumpkin->getColliderDimensions().y / 2.0f <
+                gWitch->getPosition().y + gWitch->getColliderDimensions().y / 2.0f ) {
+                
+                gGameState = LOST;
+                gWitchDisappearing = true;
 
-            gWitch->setVelocity({0.0f, 0.0f});
-            gWitch->setAcceleration({0.0f, 0.0f});
-            gWitch->setDirection(DOWN);
-            gWitch->setFrameSpeed(8);
-        } else if (gPumpkin->isCollidingBottom()) {
-            float pumpkinBottom = gPumpkin->getColliderPosition().y + gPumpkin->getColliderDimensions().y / 2.0f;
-            float sackTop = gSack->getColliderPosition().y - gSack->getColliderDimensions().y / 2.0f;
+                gWitch->setVelocity({0.0f, 0.0f});
+                gWitch->setAcceleration({0.0f, 0.0f});
+                gWitch->setDirection(DOWN);
+                gWitch->setFrameSpeed(8);
+            } else if (gPumpkin->isCollidingBottom()) {
+                float pumpkinBottom = gPumpkin->getColliderPosition().y + gPumpkin->getColliderDimensions().y / 2.0f;
+                float sackTop = gSack->getColliderPosition().y - gSack->getColliderDimensions().y / 2.0f;
 
-            bool landedOnSack = fabs(gPumpkin->getColliderPosition().x - gSack->getColliderPosition().x) <
-                (gPumpkin->getColliderDimensions().x + gSack->getColliderDimensions().x) / 2.0f &&
-                fabs(pumpkinBottom - sackTop) < 15.0f;
+                bool landedOnSack = fabs(gPumpkin->getColliderPosition().x - gSack->getColliderPosition().x) <
+                    (gPumpkin->getColliderDimensions().x + gSack->getColliderDimensions().x) / 2.0f &&
+                    fabs(pumpkinBottom - sackTop) < 15.0f;
 
-            gGameState = WON;
+                gGameState = WON;
 
-            if (landedOnSack) {
-                gPumpkinEnteringSack = true;
-                gSackAnimationTime = 0.0f;
+                if (landedOnSack) {
+                    gPumpkinEnteringSack = true;
+                    gSackAnimationTime = 0.0f;
 
-                gSack->setVelocity({0.0f, 0.0f});
-                gSack->setAcceleration({0.0f, 0.0f});
+                    gSack->setVelocity({0.0f, 0.0f});
+                    gSack->setAcceleration({0.0f, 0.0f});
+                }
+            } else if (gPumpkin->getColliderPosition().y + gPumpkin->getColliderDimensions().y / 2.0f >= SCREEN_HEIGHT) {
+                gGameState = LOST;
+
+                Vector2 position = gPumpkin->getPosition();
+                position.y = SCREEN_HEIGHT - gPumpkin->getColliderDimensions().y / 2.0f - 5.0f;
+                gPumpkin->setPosition(position);
             }
-        } else if (gPumpkin->getColliderPosition().y + gPumpkin->getColliderDimensions().y / 2.0f >= SCREEN_HEIGHT) {
-            gGameState = LOST;
-
-            Vector2 position = gPumpkin->getPosition();
-            position.y = SCREEN_HEIGHT - gPumpkin->getColliderDimensions().y / 2.0f - 5.0f;
-            gPumpkin->setPosition(position);
-        }
+        } 
     }
 
     if ((gGameState == WON || gGameState == LOST) && !gShowEndScreen && gEndTime != 0.0f) {

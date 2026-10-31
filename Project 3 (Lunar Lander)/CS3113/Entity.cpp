@@ -223,9 +223,9 @@ void Entity::update(
 {
     if (mEntityStatus == INACTIVE) return;
 
-    gTimeAccumulator += deltaTime;
+    mTimeAccumulator += deltaTime;
 
-    while (gTimeAccumulator >= fixedTimestep)
+    while (mTimeAccumulator >= fixedTimestep)
     {
         resetColliderFlags();
 
@@ -233,7 +233,7 @@ void Entity::update(
         mVelocity.y += mAcceleration.y * fixedTimestep;
 
         if (mAcceleration.x == 0.0f) {
-            mVelocity.x *= 0.95f;
+            mVelocity.x *= 0.98f;
 
             if (fabs(mVelocity.x) < 1.0f) {
                 mVelocity.x = 0.0f;
@@ -261,7 +261,7 @@ void Entity::update(
             animate(fixedTimestep);
         }
 
-        gTimeAccumulator -= fixedTimestep;
+        mTimeAccumulator -= fixedTimestep;
     }
 }
 
@@ -316,11 +316,15 @@ void Entity::render()
         static_cast<float>(mScale.y) / 2.0f
     };
 
+    if (mFlipHorizontal) {
+        textureArea.width = -textureArea.width;
+    }
+
     DrawTexturePro(
         mTexture,
         textureArea, destinationArea, originOffset,
         mAngle, WHITE
     );
 
-    displayCollider();
+    //displayCollider();
 }

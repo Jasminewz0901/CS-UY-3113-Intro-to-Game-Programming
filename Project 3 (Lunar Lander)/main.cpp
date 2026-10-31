@@ -26,14 +26,14 @@ constexpr char MACCOMPLISHED_FP[] = "assets/Mission Accomplished.png";
 constexpr char MFAILED_FP[] = "assets/Mission Failed.png";
 constexpr char WITCH_FP[] = "assets/Witch Obstacle.png";
 constexpr char SACK_FP[] = "assets/Sack.png";
-
+constexpr char BAT_FP[] = "assets/Bat.png";
+constexpr char DRACULA_FP[] = "assets/Dracula.png";
 constexpr char BGM_FP[] = "assets/sounds/Graveyard Shift.mp3";
 /*
 "Graveyard Shift" Kevin MacLeod (incompetech.com)
 Licensed under Creative Commons: By Attribution 4.0 License
 http://creativecommons.org/licenses/by/4.0/
 */
-
 constexpr char PUMP_FP[] = "assets/sounds/pumpkin.mp3";
 
 AppStatus gAppStatus = RUNNING;
@@ -50,12 +50,16 @@ bool gWitchDisappearing = false;
 bool gSackClosing = false;
 bool gPumpkinEnteringSack = false;
 bool gSackMovingRight = true;
+bool gBatCollided = false;
+bool gDraculaCollided = false;
 
 Entity *gPumpkin = nullptr;
 Entity *gHouse = nullptr;
 Entity *gPorch = nullptr;
 Entity *gWitch = nullptr;
 Entity *gSack = nullptr;
+Entity *gBat = nullptr;
+Entity *gDracula = nullptr;
 
 Texture2D gBackgroundTexture;
 Texture2D gHomepageTexture;
@@ -139,7 +143,7 @@ void initialise() {
     };
 
     gWitch = new Entity(
-        {200.0f, 220.0f},
+        {200.0f, 240.0f},
         {110.0f, 75.0f},
         WITCH_FP,
         ATLAS,
@@ -153,6 +157,47 @@ void initialise() {
     gWitch->setVelocity({150.0f, 0.0f});
     gWitch->setColliderDimensions({105.0f, 60.0f});
     gWitch->setColliderOffset({0.0f, 5.0f});
+
+    std::map<Direction, std::vector<int>> gBatAtlas = {
+        {RIGHT, {0, 1, 2, 3, 4, 5}},
+        {DOWN, {6, 7, 8, 9, 10, 11}}
+    };
+
+    gBat = new Entity(
+        {130.0f, 320.0f},
+        {90.0f, 65.0f},
+        BAT_FP,
+        ATLAS,
+        {6.0f, 2.0f},
+        gBatAtlas,
+        BLOCK
+    );
+
+    gBat->setDirection(RIGHT);
+    gBat->setFrameSpeed(8);
+    gBat->setColliderDimensions({70.0f, 45.0f});
+    gBat->setColliderOffset({0.0f, 0.0f});
+
+    std::map<Direction, std::vector<int>> gDraculaAtlas = {
+        {RIGHT, {0, 1, 2, 3, 4, 5}},
+        {DOWN, {6, 7, 8, 9, 10, 11}}
+    };
+
+    gDracula = new Entity(
+        {750.0f, 150.0f},
+        {90.0f, 80.0f},
+        DRACULA_FP,
+        ATLAS,
+        {6.0f, 2.0f},
+        gDraculaAtlas,
+        BLOCK
+    );
+
+    gDracula->setDirection(RIGHT);
+    gDracula->setFrameSpeed(8);
+    gDracula->setColliderDimensions({70.0f, 60.0f});
+    gDracula->setColliderOffset({0.0f, 0.0f});
+    gDracula->setFlipHorizontal(true);
 
     gBackgroundTexture = LoadTexture(BACKGROUND_FP);
     gHomepageTexture = LoadTexture(HOMEPAGE_FP);
@@ -186,13 +231,12 @@ void resetGame() {
     gPumpkin->resetCollision();
     gPumpkin->setScale({65.0f, 65.0f});
 
-    gWitch->setPosition({200.0f, 220.0f});
+    gWitch->setPosition({200.0f, 240.0f});
     gWitch->setMovement({1.0f, 0.0f});
     gWitch->setVelocity({150.0f, 0.0f});
     gWitch->setAcceleration({0.0f, 0.0f});
     gWitch->setDirection(RIGHT);
     gWitch->resetTimeAccumulator();
-    gWitchDisappearing = false;
     gWitch->setFrameSpeed(8);
     gWitch->resetAnimation();
 
@@ -203,10 +247,22 @@ void resetGame() {
     gSack->resetAnimation();
     gSack->resetTimeAccumulator();
 
+    gBat->setPosition({130.0f, 320.0f});
+    gBat->setDirection(RIGHT);
+    gBat->resetAnimation();
+    gBat->resetTimeAccumulator();
+
+    gDracula->setPosition({750.0f, 150.0f});
+    gDracula->setDirection(RIGHT);
+    gDracula->resetAnimation();
+    gDracula->resetTimeAccumulator();
+
     gPumpkinEnteringSack = false;
-    gSackClosing = false;
+    gWitchDisappearing = false;
     gSackAnimationTime = 0.0f;
     gSackMovingRight = true;
+    gBatCollided = false;
+    gDraculaCollided = false;
 
     gPreviousTicks = static_cast<float>(GetTime());
 }
@@ -250,13 +306,10 @@ void processInput() {
     if (gPumpkin->getFuel() > 0.0f) {
         if (IsKeyDown(KEY_A)) {
             acceleration.x = -200.0f;
-            gPumpkin->subFuel(0.2f);
         } else if (IsKeyDown(KEY_D)) {
             acceleration.x = 200.0f;
-            gPumpkin->subFuel(0.2f);
         }
     }
-
     gPumpkin->setAcceleration(acceleration);
 }
 
@@ -264,6 +317,12 @@ void update() {
     float ticks = static_cast<float> (GetTime());
     float deltaTime = ticks - gPreviousTicks;
     gPreviousTicks = ticks;
+
+    if (gGameState == PLAYING && gPumpkin->getFuel() > 0.0f) {
+        if (IsKeyDown(KEY_A) || IsKeyDown(KEY_D)) {
+            gPumpkin->subFuel(12.0f * deltaTime);
+        }
+    }
 
     if (gGameState == WON && gPumpkinEnteringSack && !gShowEndScreen) {
         gSackAnimationTime += deltaTime;
@@ -307,6 +366,24 @@ void update() {
     }
 
     if (gGameState == PLAYING) {
+        gBat->update(
+            deltaTime,
+            nullptr,
+            0,
+            nullptr,
+            0,
+            FIXED_TIMESTEP
+        );
+
+        gDracula->update(
+            deltaTime,
+            nullptr,
+            0,
+            nullptr,
+            0,
+            FIXED_TIMESTEP
+        );
+
         if (gSackMovingRight) {
             gSack->setVelocity({115.0f, 0.0f});
         } else {
@@ -315,8 +392,10 @@ void update() {
 
         gSack->update(
             deltaTime,
-            nullptr, 0,
-            nullptr, 0,
+            nullptr, 
+            0,
+            nullptr, 
+            0,
             FIXED_TIMESTEP
         );
 
@@ -350,6 +429,24 @@ void update() {
 
         gPumpkin->setPosition(position);
         gPumpkin->setVelocity(velocity);
+
+        if (fabs(gPumpkin->getColliderPosition().x - gBat->getColliderPosition().x) <
+                (gPumpkin->getColliderDimensions().x + gBat->getColliderDimensions().x) / 2.0f &&
+            fabs(gPumpkin->getColliderPosition().y - gBat->getColliderPosition().y) <
+                (gPumpkin->getColliderDimensions().y + gBat->getColliderDimensions().y) / 2.0f) {
+            gGameState = LOST;
+            gBatCollided = true;
+            gBat->setDirection(DOWN);
+            gBat->resetAnimation();
+        } else if (fabs(gPumpkin->getColliderPosition().x - gDracula->getColliderPosition().x) <
+                    (gPumpkin->getColliderDimensions().x + gDracula->getColliderDimensions().x) / 2.0f &&
+                fabs(gPumpkin->getColliderPosition().y - gDracula->getColliderPosition().y) <
+                    (gPumpkin->getColliderDimensions().y + gDracula->getColliderDimensions().y) / 2.0f) {
+            gGameState = LOST;
+            gDraculaCollided = true;
+            gDracula->setDirection(DOWN);
+            gDracula->resetAnimation();
+        }
         
         if (!gWitchDisappearing) {
             if (gWitch->getDirection() == RIGHT) {
@@ -369,12 +466,10 @@ void update() {
         );
 
         if (!gWitchDisappearing) {
-            if (gWitch->getPosition().x >= 750.0f &&
-                gWitch->getDirection() != LEFT) {
+            if (gWitch->getPosition().x >= 680.0f && gWitch->getDirection() != LEFT) {
                     gWitch->setVelocity({-150.0f, 0.0f});
                     gWitch->setDirection(LEFT);
-            } else if (gWitch->getPosition().x <= 50.0f &&
-                    gWitch->getDirection() != RIGHT) {
+            } else if (gWitch->getPosition().x <= 120.0f && gWitch->getDirection() != RIGHT) {
                 gWitch->setVelocity({150.0f, 0.0f});
                 gWitch->setDirection(RIGHT);
             }
@@ -391,44 +486,38 @@ void update() {
         
             gPumpkin->getPosition().y - gPumpkin->getColliderDimensions().y / 2.0f <
             gWitch->getPosition().y + gWitch->getColliderDimensions().y / 2.0f ) {
-                gGameState = LOST;
+            
+            gGameState = LOST;
+            gWitchDisappearing = true;
 
-                gWitchDisappearing = true;
-                gWitch->setVelocity({0.0f, 0.0f});
-                gWitch->setAcceleration({0.0f, 0.0f});
-                gWitch->setDirection(DOWN);
-                gWitch->setFrameSpeed(8);
-            } else if (gPumpkin->isCollidingBottom()) {
+            gWitch->setVelocity({0.0f, 0.0f});
+            gWitch->setAcceleration({0.0f, 0.0f});
+            gWitch->setDirection(DOWN);
+            gWitch->setFrameSpeed(8);
+        } else if (gPumpkin->isCollidingBottom()) {
+            float pumpkinBottom = gPumpkin->getColliderPosition().y + gPumpkin->getColliderDimensions().y / 2.0f;
+            float sackTop = gSack->getColliderPosition().y - gSack->getColliderDimensions().y / 2.0f;
 
-                float pumpkinBottom = gPumpkin->getColliderPosition().y +
-                                      gPumpkin->getColliderDimensions().y / 2.0f;
+            bool landedOnSack = fabs(gPumpkin->getColliderPosition().x - gSack->getColliderPosition().x) <
+                (gPumpkin->getColliderDimensions().x + gSack->getColliderDimensions().x) / 2.0f &&
+                fabs(pumpkinBottom - sackTop) < 15.0f;
 
-                float sackTop = gSack->getColliderPosition().y -
-                                gSack->getColliderDimensions().y / 2.0f;
+            gGameState = WON;
 
-                bool landedOnSack =
-                    fabs(gPumpkin->getColliderPosition().x -
-                        gSack->getColliderPosition().x) <
-                    (gPumpkin->getColliderDimensions().x +
-                    gSack->getColliderDimensions().x) / 2.0f &&
-                    fabs(pumpkinBottom - sackTop) < 15.0f;
+            if (landedOnSack) {
+                gPumpkinEnteringSack = true;
+                gSackAnimationTime = 0.0f;
 
-                gGameState = WON;
-
-                if (landedOnSack) {
-                    gPumpkinEnteringSack = true;
-                    gSackAnimationTime = 0.0f;
-
-                    gSack->setVelocity({0.0f, 0.0f});
-                    gSack->setAcceleration({0.0f, 0.0f});
-                }
-            } else if (gPumpkin->getColliderPosition().y + gPumpkin->getColliderDimensions().y / 2.0f >= SCREEN_HEIGHT) {
-                gGameState = LOST;
-
-                Vector2 position = gPumpkin->getPosition();
-                position.y = SCREEN_HEIGHT - gPumpkin->getColliderDimensions().y / 2.0f - 5.0f;
-                gPumpkin->setPosition(position);
+                gSack->setVelocity({0.0f, 0.0f});
+                gSack->setAcceleration({0.0f, 0.0f});
             }
+        } else if (gPumpkin->getColliderPosition().y + gPumpkin->getColliderDimensions().y / 2.0f >= SCREEN_HEIGHT) {
+            gGameState = LOST;
+
+            Vector2 position = gPumpkin->getPosition();
+            position.y = SCREEN_HEIGHT - gPumpkin->getColliderDimensions().y / 2.0f - 5.0f;
+            gPumpkin->setPosition(position);
+        }
     }
 
     if ((gGameState == WON || gGameState == LOST) && !gShowEndScreen && gEndTime != 0.0f) {
@@ -450,10 +539,10 @@ void update() {
         );
 
         if (gGameState == WON || (gGameState == LOST && !gWitchDisappearing)) {
-            if (gWitch->getPosition().x >= 750.0f && gWitch->getDirection() != LEFT) {
+            if (gWitch->getPosition().x >= 680.0f && gWitch->getDirection() != LEFT) {
                 gWitch->setVelocity({-150.0f, 0.0f});
                 gWitch->setDirection(LEFT);
-            } else if (gWitch->getPosition().x <= 50.0f && gWitch->getDirection() != RIGHT) {
+            } else if (gWitch->getPosition().x <= 120.0f && gWitch->getDirection() != RIGHT) {
                 gWitch->setVelocity({150.0f, 0.0f});
                 gWitch->setDirection(RIGHT);
             }
@@ -490,6 +579,25 @@ void update() {
         }
     }
 
+    if ((gGameState == WON || gGameState == LOST) && !gShowEndScreen) {
+        gBat->update(
+            deltaTime,
+            nullptr, 
+            0,
+            nullptr, 
+            0,
+            FIXED_TIMESTEP
+        );
+
+        gDracula->update(
+            deltaTime,
+            nullptr, 
+            0,
+            nullptr, 
+            0,
+            FIXED_TIMESTEP
+        );
+    }
     UpdateMusicStream(gBGM);
 }
 
@@ -533,6 +641,8 @@ void render() {
     }
 
     gSack->render();
+    gBat->render();
+    gDracula->render();
 
     if (gGameState != LOST || !gShowEndScreen) {
         gWitch->render();
@@ -620,7 +730,6 @@ void render() {
             WHITE
         );
     }
-
     EndDrawing();
 }
 
@@ -637,6 +746,8 @@ void shutdown() {
     delete gPorch;
     delete gWitch;
     delete gSack;
+    delete gBat;
+    delete gDracula;
 
     CloseAudioDevice();
     CloseWindow();

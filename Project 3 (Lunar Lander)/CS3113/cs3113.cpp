@@ -1,104 +1,330 @@
-#include "cs3113.h"
+#include "Entity.h"
 
-Color ColorFromHex(const char *hex)
+Entity::Entity() :
+    mPosition{ 0.0f, 0.0f }, mMovement{ 0.0f, 0.0f },
+    mVelocity{ 0.0f, 0.0f }, mAcceleration{ 0.0f, 0.0f },
+    mScale{ DEFAULT_SIZE, DEFAULT_SIZE },
+    mColliderDimensions{ DEFAULT_SIZE, DEFAULT_SIZE },
+    mTexture{}, mTextureType{ SINGLE }, mSpriteSheetDimensions{},
+    mAnimationAtlas{}, mAnimationIndices{}, mDirection{ RIGHT },
+    mFrameSpeed{ 0 }, mSpeed{ DEFAULT_SPEED }, mAngle{ 0.0f },
+    mEntityType{ NONE } {}
+
+Entity::Entity(
+    Vector2     position,
+    Vector2     scale,
+    const char *textureFilepath,
+    EntityType  entityType
+) :
+    mPosition{ position }, mMovement{ 0.0f, 0.0f },
+    mVelocity{ 0.0f, 0.0f }, mAcceleration{ 0.0f, 0.0f },
+    mScale{ scale }, mColliderDimensions{ scale },
+    mTexture{ LoadTexture(textureFilepath) }, mTextureType{ SINGLE },
+    mSpriteSheetDimensions{}, mAnimationAtlas{}, mAnimationIndices{},
+    mDirection{ RIGHT }, mFrameSpeed{ 0 }, mSpeed{ DEFAULT_SPEED },
+    mAngle{ 0.0f }, mEntityType{ entityType } {}
+
+Entity::Entity(
+    Vector2                               position,
+    Vector2                               scale,
+    const char                           *textureFilepath,
+    TextureType                           textureType,
+    Vector2                               spriteSheetDimensions,
+    std::map<Direction, std::vector<int>> animationAtlas,
+    EntityType                            entityType
+) :
+    mPosition{ position }, mMovement{ 0.0f, 0.0f },
+    mVelocity{ 0.0f, 0.0f }, mAcceleration{ 0.0f, 0.0f },
+    mScale{ scale }, mColliderDimensions{ scale },
+    mTexture{ LoadTexture(textureFilepath) }, mTextureType{ textureType },
+    mSpriteSheetDimensions{ spriteSheetDimensions },
+    mAnimationAtlas{ animationAtlas },
+    mAnimationIndices{ animationAtlas.at(DOWN) }, mDirection{ DOWN },
+    mFrameSpeed{ DEFAULT_FRAME_SPEED }, mSpeed{ DEFAULT_SPEED },
+    mAngle{ 0.0f }, mEntityType{ entityType } {}
+
+Entity::~Entity() { UnloadTexture(mTexture); }
+
+/**
+ * Iterates through a list of collidable entities, checks for collisions with
+ * the player entity, and resolves any vertical overlap by adjusting the
+ * player's position and velocity accordingly.
+ *
+ * @param collidableEntities An array of pointers to `Entity` objects that
+ * represent the entities that the current `Entity` instance can potentially
+ * collide with. The `collisionCheckCount` parameter specifies the number of
+ * entities in the `collidableEntities` array that need to be checked for
+ * collision.
+ * @param collisionCheckCount The number of entities that the current entity
+ * (`Entity`) should check for collisions with. This parameter specifies how
+ * many entities are in the `collidableEntities` array that need to be checked
+ * for collisions with the current entity.
+ */
+void Entity::checkCollisionY(
+    Entity *collidableEntities, int collisionCheckCount
+)
 {
-    // Skip leading '#', if present
-    if (hex[0] == '#') hex++;
-
-    // Default alpha = 255 (opaque)
-    unsigned int r = 0,
-                 g = 0,
-                 b = 0,
-                 a = 255;
-
-    // 6‑digit form: RRGGBB
-    if (sscanf(hex, "%02x%02x%02x", &r, &g, &b) == 3)
+    for (int i = 0; i < collisionCheckCount; i++)
     {
-        return Color{ static_cast<unsigned char>(r),
-                      static_cast<unsigned char>(g),
-                      static_cast<unsigned char>(b),
-                      static_cast<unsigned char>(a) };
-    }
+        Entity *collidableEntity = &collidableEntities[i];
 
-    // 8‑digit form: RRGGBBAA
-    if (sscanf(hex, "%02x%02x%02x%02x", &r, &g, &b, &a) == 4)
+        if (isColliding(collidableEntity))
+        {
+            float yDistance = fabs(getColliderPosition().y - collidableEntity->getColliderPosition().y);
+            float yOverlap  = fabs(
+                yDistance - (mColliderDimensions.y / 2.0f) -
+                (collidableEntity->mColliderDimensions.y / 2.0f)
+            );
+
+            if (mVelocity.y > 0)
+            {
+                mPosition.y        -= yOverlap;
+                mVelocity.y         = 0;
+                mIsCollidingBottom  = true;
+            }
+            else if (mVelocity.y < 0)
+            {
+                mPosition.y     += yOverlap;
+                mVelocity.y      = 0;
+                mIsCollidingTop  = true;
+
+                if (collidableEntity->mEntityType == BLOCK)
+                    collidableEntity->deactivate();
+            }
+        }
+    }
+}
+
+void Entity::checkCollisionX(
+    Entity *collidableEntities, int collisionCheckCount
+)
+{
+    for (int i = 0; i < collisionCheckCount; i++)
     {
-        return Color{ static_cast<unsigned char>(r),
-                      static_cast<unsigned char>(g),
-                      static_cast<unsigned char>(b),
-                      static_cast<unsigned char>(a) };
-    }
+        Entity *collidableEntity = &collidableEntities[i];
 
-    // Fallback – return white so you notice something went wrong
-    return RAYWHITE;
+        if (isColliding(collidableEntity))
+        {
+            float yDistance = fabs(getColliderPosition().y - collidableEntity->getColliderPosition().y);
+            float yOverlap  = fabs(
+                yDistance - (mColliderDimensions.y / 2.0f) -
+                (collidableEntity->mColliderDimensions.y / 2.0f)
+            );
+
+            if (yOverlap < Y_COLLISION_THRESHOLD) continue;
+
+            float xDistance = fabs(getColliderPosition().x - collidableEntity->getColliderPosition().x);
+            float xOverlap  = fabs(
+                xDistance - (mColliderDimensions.x / 2.0f) -
+                (collidableEntity->mColliderDimensions.x / 2.0f)
+            );
+
+            if (mVelocity.x > 0)
+            {
+                mPosition.x -= xOverlap;
+                mVelocity.x  = 0;
+
+                mIsCollidingRight = true;
+            }
+            else if (mVelocity.x < 0)
+            {
+                mPosition.x += xOverlap;
+                mVelocity.x  = 0;
+
+                mIsCollidingLeft = true;
+            }
+        }
+    }
 }
 
 /**
- * @brief Calculates and returns the magnitude of a 2D vector.
+ * Checks if two entities are colliding based on their positions and collider
+ * dimensions.
  *
- * @param vector Any 2D raylib vector.
+ * @param other represents another Entity with which you want to check for
+ * collision. It is a pointer to the Entity class.
+ *
+ * @return returns `true` if the two entities are colliding based on their
+ * positions and collider dimensions, and `false` otherwise.
  */
-float GetLength(const Vector2 vector)
+bool Entity::isColliding(Entity *other) const {
+    if (!other->isActive()) return false;
+
+    Vector2 thisPosition = getColliderPosition();
+    Vector2 otherPosition = other->getColliderPosition();
+
+    float xDistance = fabs(thisPosition.x - otherPosition.x) -
+        ((mColliderDimensions.x + other->getColliderDimensions().x) / 2.0f);
+
+    float yDistance = fabs(thisPosition.y - otherPosition.y) -
+        ((mColliderDimensions.y + other->getColliderDimensions().y) / 2.0f);
+
+    return xDistance < 0.0f && yDistance < 0.0f;
+}
+
+/**
+ * Updates the current frame index of an entity's animation based on the
+ * elapsed time and frame speed.
+ *
+ * @param deltaTime represents the time elapsed since the last frame update.
+ */
+void Entity::animate(float deltaTime)
 {
-    return sqrtf(
-        pow(vector.x, 2) + pow(vector.y, 2)
+    mAnimationIndices = mAnimationAtlas.at(mDirection);
+
+    mAnimationTime += deltaTime;
+    float secondsPerFrame = 1.0f / mFrameSpeed;
+
+    if (mAnimationTime >= secondsPerFrame)
+    {
+        mAnimationTime = 0.0f;
+
+        if (mDirection == UP || (mEntityType == BLOCK && mDirection == DOWN) ||
+            (mEntityType == PLATFORM && mDirection == DOWN)) {
+                if (mCurrentFrameIndex < static_cast<int>(mAnimationIndices.size()) - 1) {
+                    mCurrentFrameIndex++;
+                }
+        } else {
+            mCurrentFrameIndex++;
+            mCurrentFrameIndex %= mAnimationIndices.size();
+        }
+    }
+}
+
+void Entity::displayCollider()
+{
+    Vector2 colliderPosition = getColliderPosition();
+
+    Rectangle colliderBox = {
+        colliderPosition.x - mColliderDimensions.x / 2.0f,
+        colliderPosition.y - mColliderDimensions.y / 2.0f,
+        mColliderDimensions.x,
+        mColliderDimensions.y
+    };
+
+    DrawRectangleLines(
+        colliderBox.x,    
+        colliderBox.y,    
+        colliderBox.width,  
+        colliderBox.height, 
+        GREEN              
     );
 }
 
-/**
- * @brief Mutates two dimensional vector to become its unit vector counterpart,
- * also known as a direction vector, retains the original vector’s orientation
- * but has a standardised length.
- *
- * @see https://hogonext.com/how-to-normalize-a-vector/
- *
- * @param vector Any 2D raylib vector.
- */
-void Normalise(Vector2 *vector)
-{
-    float magnitude = GetLength(*vector);
+void Entity::update(
+    float deltaTime,
+    Entity *collidableEntities,
+    int collisionCheckCount,
 
-    vector->x /= magnitude;
-    vector->y /= magnitude;
+    Entity *additionalCollidableEntities,
+    int additionalCollisionCheckCount,
+    float fixedTimestep
+)
+{
+    if (mEntityStatus == INACTIVE) return;
+
+    mTimeAccumulator += deltaTime;
+
+    while (mTimeAccumulator >= fixedTimestep)
+    {
+        resetColliderFlags();
+
+        mVelocity.x += mAcceleration.x * fixedTimestep;
+        mVelocity.y += mAcceleration.y * fixedTimestep;
+
+        if (mAcceleration.x == 0.0f) {
+            mVelocity.x *= 0.98f;
+
+            if (fabs(mVelocity.x) < 1.0f) {
+                mVelocity.x = 0.0f;
+            }
+        }
+
+        if (mIsJumping)
+        {
+            mIsJumping = false;
+            mVelocity.y -= mJumpingPower;
+        }
+
+        mPosition.y += mVelocity.y * fixedTimestep;
+        checkCollisionY(collidableEntities, collisionCheckCount);
+
+        checkCollisionY(
+            additionalCollidableEntities, additionalCollisionCheckCount
+        );
+
+        mPosition.x += mVelocity.x * fixedTimestep;
+
+        checkCollisionX(collidableEntities, collisionCheckCount);
+
+        if (mTextureType == ATLAS) {
+            animate(fixedTimestep);
+        }
+
+        mTimeAccumulator -= fixedTimestep;
+    }
 }
 
-/**
- * @brief Calculates and returns the UV coordinates and dimensions of a
- * rectangle slice from a texture based on the given index, number of rows, and
- * number of columns.
- *
- * @param texture a pointer to a `Texture2D` struct, contains information about
- * a 2D texture such as its width and height.
- * @param index represents the index of the specific slice within a texture
- * atlas. Each slice is a sub-image within the texture atlas that contains
- * multiple images arranged in rows and columns.
- * @param rows represents the number of rows in which the texture is divided.
- * This parameter is used to calculate the vertical position of the texture
- * slice based on the index provided.
- * @param cols represents the number of columns in a grid layout. It is used in
- * the `getUVRectangle` function to calculate the UV coordinates for a specific
- * index within the grid.
- *
- * @return a `Rectangle` struct that represents a portion of a texture based on
- * the provided parameters. The `Rectangle` struct contains the top-left
- * x-coordinate, top-left y-coordinate, width, and height of the specified
- * portion of the texture.
- */
-Rectangle getUVRectangle(const Texture2D *texture, int index, int rows, int cols)
+void Entity::render()
 {
-    float uCoord = static_cast<float>(index % cols) / static_cast<float>(cols);
-    uCoord *= texture->width;
+    if (mEntityStatus == INACTIVE) return;
 
-    float vCoord = static_cast<float>(index / cols) / static_cast<float>(rows);
-    vCoord *= texture->height;
+    Rectangle textureArea;
 
-    float sliceWidth  = texture->width  / static_cast<float>(cols);
-    float sliceHeight = texture->height / static_cast<float>(rows);
+    switch (mTextureType)
+    {
+    case SINGLE:
+        textureArea = {
+            0.0f, 0.0f,
 
-    return {
-        uCoord,     // top-left x-coord
-        vCoord,     // top-left y-coord
-        sliceWidth, // width of slice
-        sliceHeight // height of slice
+            static_cast<float>(mTexture.width),
+            static_cast<float>(mTexture.height)
+        };
+        break;
+
+    case ATLAS:
+    {
+        float columns = mSpriteSheetDimensions.x;
+        float rows = mSpriteSheetDimensions.y;
+
+        float frameWidth = static_cast<float>(mTexture.width) / columns;
+        float frameHeight = static_cast<float>(mTexture.height) / rows;
+
+        int frame = mAnimationIndices[mCurrentFrameIndex];
+
+        textureArea = {
+            (frame % static_cast<int>(columns)) * frameWidth,
+            (frame / static_cast<int>(columns)) * frameHeight,
+            frameWidth,
+            frameHeight
+        };
+        break;
+    }
+    default:
+        break;
+    }
+
+    Rectangle destinationArea = {
+        mPosition.x,
+        mPosition.y,
+        static_cast<float>(mScale.x),
+        static_cast<float>(mScale.y)
     };
+
+    Vector2 originOffset = {
+        static_cast<float>(mScale.x) / 2.0f,
+        static_cast<float>(mScale.y) / 2.0f
+    };
+
+    if (mFlipHorizontal) {
+        textureArea.width = -textureArea.width;
+    }
+
+    DrawTexturePro(
+        mTexture,
+        textureArea, destinationArea, originOffset,
+        mAngle, WHITE
+    );
+
+    //displayCollider();
 }

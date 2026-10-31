@@ -34,8 +34,7 @@ private:
 
     bool  mIsJumping       = false;
     float mJumpingPower    = 0.0f;
-    // Saves elapsed frame time so update() can keep physics on fixed steps.
-    float gTimeAccumulator = 0.0f;
+    float mTimeAccumulator = 0.0f;
 
     int   mSpeed;
     float mAngle;
@@ -58,6 +57,8 @@ private:
         mIsCollidingRight  = false;
         mIsCollidingLeft   = false;
     }
+    
+    bool mFlipHorizontal = false;
 
     void animate(float deltaTime);
 
@@ -85,13 +86,11 @@ public:
     );
     ~Entity();
 
-    // Process several fixed physics steps and check two entity arrays.
     void update(
         float deltaTime,
         Entity *collidableEntities,
         int collisionCheckCount,
 
-        // Second array lets the player also collide with blocks, first array is for tiles .
         Entity *additionalCollidableEntities,
         int additionalCollisionCheckCount,
         float fixedTimestep
@@ -176,7 +175,7 @@ public:
     void setFuel(float newFuel)
         { mFuel = newFuel;                         }
     void resetTimeAccumulator()
-        { gTimeAccumulator = 0.0f;                 }
+        { mTimeAccumulator = 0.0f;                 }
     void resetCollision()
         { resetColliderFlags();                    }
     void setDirection(Direction newDirection)
@@ -195,6 +194,9 @@ public:
         }
     void setColliderOffset(Vector2 newOffset) {
         mColliderOffset = newOffset;
+    }
+    void setFlipHorizontal(bool flip) {
+        mFlipHorizontal = flip;
     }
 
 };

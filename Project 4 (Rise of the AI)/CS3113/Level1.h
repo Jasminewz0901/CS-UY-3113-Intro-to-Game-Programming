@@ -16,11 +16,11 @@ private:
     std::vector<Entity *> mPumpkins;
 
     float mPumpkinStartX[PUMPKIN_COUNT] = {
-        150.0f,  // Bottom-right pumpkin
-        650.0f,  // Lower-middle platform
-        450.0f,  // Middle platform
-        700.0f,  // Upper-left platform
-        300.0f   // Upper-right platform
+        150.0f,  
+        650.0f, 
+        450.0f, 
+        700.0f, 
+        300.0f 
     };
 
     float mPumpkinStartY[PUMPKIN_COUNT] = {
@@ -32,31 +32,43 @@ private:
     };
 
     float mPumpkinLeftBoundaries[PUMPKIN_COUNT] = {
-        150.0f,  // Bottom-right
-        550.0f,  // Lower-middle
-        450.0f,  // Middle
-        650.0f,  // Upper-left
-        300.0f   // Upper-right
+        150.0f, 
+        550.0f, 
+        450.0f,  
+        650.0f,  
+        300.0f   
     };
 
     float mPumpkinRightBoundaries[PUMPKIN_COUNT] = {
-        250.0f,  // Bottom-right
-        650.0f,  // Lower-middle
-        500.0f,  // Middle
-        730.0f,  // Upper-left
-        400.0f   // Upper-right
+        250.0f,  
+        650.0f, 
+        500.0f, 
+        730.0f,
+        400.0f  
     };
 
     bool mPumpkinMovingLeft[PUMPKIN_COUNT] = {
-        true, true, true, true, true
+        true, 
+        true, 
+        true, 
+        true, 
+        true
     };
 
     bool mPumpkinDefeated[PUMPKIN_COUNT] = {
-        false, false, false, false, false
+        false, 
+        false, 
+        false, 
+        false, 
+        false
     };
 
     float mPumpkinDefeatTime[PUMPKIN_COUNT] = {
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f
+        0.0f, 
+        0.0f, 
+        0.0f, 
+        0.0f, 
+        0.0f
     };
 
     static constexpr int SKELETON_COUNT = 2;
@@ -64,13 +76,13 @@ private:
     std::vector<Entity *> mSkeletons;
 
     float mSkeletonStartX[SKELETON_COUNT] = {
-        350.0f,  // Lower platform
-        400.0f   // Upper-middle platform
+        350.0f,  
+        400.0f  
     };
 
     float mSkeletonStartY[SKELETON_COUNT] = {
-        500.0f,  // Lower platform
-        -50.0f  // Upper-middle platform
+        500.0f, 
+        -50.0f 
     };
 
     float mSkeletonLeftBoundaries[SKELETON_COUNT] = {
@@ -84,11 +96,13 @@ private:
     };
 
     bool mSkeletonDefeated[SKELETON_COUNT] = {
-        false, false
+        false, 
+        false
     };
 
     float mSkeletonDefeatTime[SKELETON_COUNT] = {
-        0.0f, 0.0f
+        0.0f, 
+        0.0f
     };
 
     static constexpr float SKELETON_CHASE_RANGE = 250.0f;

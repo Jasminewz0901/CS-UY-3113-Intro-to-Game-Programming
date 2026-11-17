@@ -27,7 +27,12 @@ void Level3::initialise()
     mHeartsTexture = LoadTexture("assets/hearts.png");
 
     mInvincibilityTime = 0.0f;
-
+    
+    /*
+    "Deck the Halls B" Kevin MacLeod (incompetech.com)
+    Licensed under Creative Commons: By Attribution 4.0 License
+    http://creativecommons.org/licenses/by/4.0/
+    */
     mGameState.bgm = LoadMusicStream("assets/level3/sounds/level3_music.mp3");
     SetMusicVolume(mGameState.bgm, 0.30f);
     PlayMusicStream(mGameState.bgm);
@@ -37,21 +42,15 @@ void Level3::initialise()
 
     mDoorSound = LoadSound("assets/level3/sounds/door.wav");
 
-    /*
-        ----------- MAP -----------
-    */
     mGameState.map = new Map(
-        LEVEL_WIDTH, LEVEL_HEIGHT, // map grid cols & rows
-        mLevelData,                // grid data
-        "assets/level3/tiles.png", // texture filepath
-        TILE_DIMENSION,            // tile size
-        4, 1,                      // texture cols & rows
-        mOrigin                    // in-game origin
+        LEVEL_WIDTH, LEVEL_HEIGHT, 
+        mLevelData,              
+        "assets/level3/tiles.png", 
+        TILE_DIMENSION,           
+        4, 1,                     
+        mOrigin                 
     );
 
-    /*
-        ----------- PROTAGONIST -----------
-    */
     std::map<Direction, std::vector<int>> playerAnimationAtlas = {
         { DOWN,  {  0,  1,  2,  3,  4,  5,  6,  7 } },
         { LEFT,  {  8,  9, 10, 11, 12, 13, 14, 15 } },
@@ -59,15 +58,14 @@ void Level3::initialise()
         { RIGHT, { 8, 9, 10, 11, 12, 13, 14, 15 } },
     };
 
-    // Assets from @see https://sscary.itch.io/the-adventurer-female
     mGameState.player = new Entity(
-        { mOrigin.x - 300.0f, mOrigin.y + 320.0f }, // position
-        { 75.0f, 75.0f },             // scale
-        "assets/player.png",                     // texture file address
-        ATLAS,                                      // single image or atlas?
-        { 8, 5 },                                   // atlas dimensions
-        playerAnimationAtlas,                      // actual atlas
-        PLAYER                                      // entity type
+        { mOrigin.x - 300.0f, mOrigin.y + 320.0f },
+        { 75.0f, 75.0f },           
+        "assets/player.png",                    
+        ATLAS,                                    
+        { 8, 5 },                                  
+        playerAnimationAtlas,                    
+        PLAYER                                     
     );
 
     mGameState.player->setJumpingPower(550.0f);
@@ -433,11 +431,11 @@ void Level3::update(float deltaTime)
     }
 
     mGameState.player->update(
-        deltaTime,      // delta time / fixed timestep
-        nullptr,        // player
-        mGameState.map, // map
-        nullptr,        // collidable entities
-        0               // col. entity count
+        deltaTime,      
+        nullptr,        
+        mGameState.map, 
+        nullptr,        
+        0               
     );
 
     if (mGameState.player->getPosition().y > END_GAME_THRESHOLD) {

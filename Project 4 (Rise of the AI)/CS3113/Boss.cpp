@@ -56,7 +56,6 @@ void Boss::initialise() {
         mOrigin
     );
 
-    // ----------- PLAYER -----------
     std::map<Direction, std::vector<int>> playerAnimationAtlas = {
         { DOWN,  { 0, 1, 2, 3, 4, 5, 6, 7 } },
         { LEFT,  { 8, 9, 10, 11, 12, 13, 14, 15 } },
@@ -86,7 +85,6 @@ void Boss::initialise() {
         ACCELERATION_OF_GRAVITY
     });
 
-    // ----------- GRINCH -----------
     std::map<Direction, std::vector<int>> grinchAnimationAtlas = {
         { DOWN,  { 0, 1, 2, 3, 4, 5, 6, 7 } },
         { RIGHT, { 8, 9, 10, 11, 12, 13, 14, 15 } },
@@ -107,7 +105,6 @@ void Boss::initialise() {
     mGrinch->setFrameSpeed(8);
     mGrinch->setColliderDimensions({ 60.0f, 80.0f });
 
-    // ----------- MARIAH CAREY -----------
     std::map<Direction, std::vector<int>> mariahAnimationAtlas = {
         { DOWN,  { 0 } },
         { UP,    { 0 } },
@@ -135,10 +132,20 @@ void Boss::initialise() {
     mSnowballImpactSound = LoadSound("assets/snowball_impact.mp3");
     SetSoundVolume(mSnowballImpactSound, 1.0f);
 
+    /*
+    "Big Drumming" Kevin MacLeod (incompetech.com)
+    Licensed under Creative Commons: By Attribution 4.0 License
+    http://creativecommons.org/licenses/by/4.0/
+    */
     mGameState.bgm = LoadMusicStream("assets/final/sounds/boss_music.mp3");
     SetMusicVolume(mGameState.bgm, 1.0f);
     PlayMusicStream(mGameState.bgm);
 
+    /*
+    "It's Time!" — Mariah Carey
+    Audio excerpt featuring Mariah Carey's "It's Time!" Christmas announcement
+    All rights reserved by the respective copyright holders.
+    */
     mItsTimeMusic = LoadMusicStream("assets/final/sounds/its_time.mp3");
     SetMusicVolume(mItsTimeMusic, 1.0f);
 }
@@ -218,7 +225,6 @@ void Boss::update(float deltaTime) {
         mGrinch->setDirection(RIGHT);
     }
 
-    // Grinch throwing animation
     if (mGrinchAttacking) {
         mGrinchAttackDuration += deltaTime;
         mPresentSpawnTimer += deltaTime;
@@ -235,12 +241,9 @@ void Boss::update(float deltaTime) {
         if (mGrinchAttackDuration >= GRINCH_ATTACK_DURATION) {
             mGrinchAttacking = false;
 
-            // Return to walking animation
             mGrinch->setDirection(DOWN);
         }
-    }
-    else {
-        // Grinch patrol AI
+    } else {
         Vector2 grinchPosition = mGrinch->getPosition();
 
         if (mGrinchMovingLeft) {
@@ -250,8 +253,7 @@ void Boss::update(float deltaTime) {
                 grinchPosition.x = mGrinchLeftBoundary;
                 mGrinchMovingLeft = false;
             }
-        }
-        else {
+        } else {
             grinchPosition.x += mGrinchSpeed * deltaTime;
 
             if (grinchPosition.x >= mGrinchRightBoundary) {
@@ -259,7 +261,6 @@ void Boss::update(float deltaTime) {
                 mGrinchMovingLeft = true;
             }
         }
-
         mGrinch->setPosition(grinchPosition);
     }
     }
@@ -272,7 +273,6 @@ void Boss::update(float deltaTime) {
         0
     );
     
-
     for (int i = 0; i < mPresents.size(); i++) {
         Entity *present = mPresents[i];
 
@@ -281,7 +281,6 @@ void Boss::update(float deltaTime) {
 
             position.y += mPresentSpeed * deltaTime;
 
-            // Check collision with player
             Vector2 playerPosition = mGameState.player->getPosition();
 
             float distanceX = position.x - playerPosition.x;
@@ -311,8 +310,7 @@ void Boss::update(float deltaTime) {
             }
 
             present->setPosition(position);
-        }
-        else {
+        } else {
             mPresentImpactTime[i] += deltaTime;
 
             if (mPresentImpactTime[i] >= 0.75f) {
@@ -486,10 +484,6 @@ void Boss::shutdown() {
         UnloadSound(mGameState.jumpSound);
         mGameState.jumpSound = {};
     }
-}
-
-void Boss::restart() {
-    // Reset the boss fight here
 }
 
 void Boss::throwSnowball() {

@@ -28,6 +28,11 @@ void Level1::initialise()
 
     mInvincibilityTime = 0.0f;
 
+    /*
+    "Graveyard Shift" Kevin MacLeod (incompetech.com)
+    Licensed under Creative Commons: By Attribution 4.0 License
+    http://creativecommons.org/licenses/by/4.0/
+    */
     mGameState.bgm = LoadMusicStream("assets/level1/sounds/level1_music.mp3");
     SetMusicVolume(mGameState.bgm, 0.30f);
     PlayMusicStream(mGameState.bgm);

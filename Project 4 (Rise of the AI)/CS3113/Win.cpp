@@ -23,7 +23,14 @@ void Win::initialise() {
     mGameState.nextSceneID = NO_SCENE;
 
     mWinTexture = LoadTexture("assets/win.png");
-
+    
+    /*
+    "Last Christmas" performed by Mariah Carey
+    Written by George Michael
+    Originally performed by Wham!
+    From the album Merry Christmas II You (2010)
+    All rights reserved by the respective copyright holders.
+    */
     mVictoryMusic = LoadMusicStream("assets/final/sounds/victory.mp3");
     SetMusicVolume(mVictoryMusic, 0.5f);
     PlayMusicStream(mVictoryMusic);

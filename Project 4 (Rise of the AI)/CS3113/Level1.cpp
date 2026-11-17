@@ -44,9 +44,6 @@ void Level1::initialise()
         mOrigin                    // in-game origin
     );
 
-    /*
-        ----------- PROTAGONIST -----------
-    */
     std::map<Direction, std::vector<int>> playerAnimationAtlas = {
         { DOWN,  {  0,  1,  2,  3,  4,  5,  6,  7 } },
         { LEFT,  {  8,  9, 10, 11, 12, 13, 14, 15 } },
@@ -54,7 +51,6 @@ void Level1::initialise()
         { RIGHT, { 8, 9, 10, 11, 12, 13, 14, 15 } },
     };
 
-    // Assets from @see https://sscary.itch.io/the-adventurer-female
     mGameState.player = new Entity(
         { mOrigin.x - 300.0f, mOrigin.y + 320.0f }, // position
         { 75.0f, 75.0f },             // scale

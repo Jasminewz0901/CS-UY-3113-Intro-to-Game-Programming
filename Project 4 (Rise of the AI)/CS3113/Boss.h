@@ -97,7 +97,6 @@ public:
     void render() override;
     void shutdown() override;
 
-    void restart();
     void throwSnowball();
     void throwPresent();
     void renderHearts();
